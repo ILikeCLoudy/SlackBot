@@ -1,0 +1,31 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    driver-class-name:
+    username:
+    password:
+    url:
+  thymeleaf:
+    cache: false
+
+  jpa:
+    open-in-view: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect:
+
+
+slack:
+  bot-token: ${SLAKC_BOT_TOKEN}
+  postMessageUrl: "NULL"
+  channel:
+    monitor : #
+
+logging:
+  level:
+    org.hibernate.sql: debug
