@@ -24,6 +24,10 @@ public class VoteEntity {
     private LocalDate voteDate;
     private LocalDateTime voteAt;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "menu_id")
+    private MenuEntity menu;
+
     @PrePersist
     public void prePersist() {
         this.voteAt = LocalDateTime.now();
