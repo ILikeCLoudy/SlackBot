@@ -1,4 +1,4 @@
-package com.SKALA.LikeCloudy.Service;
+package com.SKALA.LikeCloudy.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
