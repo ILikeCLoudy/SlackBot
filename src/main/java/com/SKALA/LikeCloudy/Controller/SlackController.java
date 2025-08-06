@@ -48,13 +48,42 @@ public class SlackController {
             return ResponseEntity.internalServerError().body("서버 오류 : " + e.getMessage());
         }
     }
+
+    @PostMapping("/command")
+    public ResponseEntity<String> handleSlashCommand(@RequestParam("text") String text,
+                                                     @RequestParam("user_id") String userId,
+                                                     @RequestParam("user_name") String userName,
+                                                     @RequestParam("team_id") String teamId) {
+        try {
+            // 사용자가 "A" 등으로 투표했다고 가정
+            VoteRequestDTO vote = new VoteRequestDTO(userId, text.trim());
+            voteService.vote(vote);
+
+            return ResponseEntity.ok(userName + " 님의 투표가 완료되었습니다! ✅");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.ok("엥? 이미 투표하셨어요! ❗");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok("유효하지 않은 사용자나 메뉴입니다. ❌");
+        } catch (Exception e) {
+            return ResponseEntity.ok("서버 오류가 발생했어요: " + e.getMessage());
+        }
+    }
+
+
     /*
     [GET] /slack/result -> 오늘의 투표 결과를 Slack 메세지 형식으로 반환
      */
     @GetMapping("/result")
     public ResponseEntity<String> getTodayVoteResult() {
         VoteSummaryResponse summary = resultService.getVoteSummary(LocalDate.now());
-        String message = resultService.formatSummarForSlack(summary);
+        String message = resultService.formatSummaryForSlack(summary);
         return ResponseEntity.ok(message);
     }
+
+    @GetMapping("/result/send")
+    public ResponseEntity<String> sendTodayResultToSlack() {
+        resultService.sendTodaySummaryToSlack();
+        return ResponseEntity.ok("✅ 투표 결과가 Slack에 전송되었습니다!");
+    }
+
 }

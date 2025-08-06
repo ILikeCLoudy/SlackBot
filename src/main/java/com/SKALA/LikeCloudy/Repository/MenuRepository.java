@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MenuRepository extends JpaRepository {
+public interface MenuRepository extends JpaRepository <MenuEntity, Long> {
     Optional<MenuEntity> findByMenuType(String menuType); // 예 : "A", "B"
     List<MenuEntity> findAllByMenuDate(LocalDate menuDate);
 }

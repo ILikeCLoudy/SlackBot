@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface VoteRepository extends JpaRepository {
+public interface VoteRepository extends JpaRepository <VoteEntity, Long> {
     List<VoteEntity> findByMenu(MenuEntity menu); // 특정 메뉴에 대한 투표내역
     List<VoteEntity> findByUser(UserEntity user); // 특정 유저의 투표 내역
     boolean existsByUser_SlackUserIdAndVoteDate(String slackUserId, LocalDate voteDate);
