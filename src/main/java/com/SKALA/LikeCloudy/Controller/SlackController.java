@@ -4,6 +4,7 @@ import com.SKALA.LikeCloudy.DTO.VoteRequestDTO;
 import com.SKALA.LikeCloudy.DTO.VoteSummaryResponse;
 import com.SKALA.LikeCloudy.Service.MenuService;
 import com.SKALA.LikeCloudy.Service.ResultService;
+import com.SKALA.LikeCloudy.Service.SlackService;
 import com.SKALA.LikeCloudy.Service.VoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,13 @@ public class SlackController {
     private final MenuService menuService;
     private final VoteService voteService;
     private final ResultService resultService;
+    private final SlackService slackService;
+
+    @GetMapping("/test")
+    public String sendSlackTest() {
+        slackService.sendMessage("테스트 메시지입니다! 👋");
+        return "Message Attempted";
+    }
 
     /*
         [GET] /slack/menus -> 오늘의 메뉴 목록 조회

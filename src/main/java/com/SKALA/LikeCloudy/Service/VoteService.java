@@ -31,7 +31,16 @@ public class VoteService {
         }
 
         // 사용자, 메뉴 조회
-        UserEntity user = userRepository.findBySlackUserId(slackUserId).orElseThrow(() -> new IllegalArgumentException("사용자가 없서요.."));
+        UserEntity user = userRepository.findBySlackUserId(slackUserId)
+                .orElseGet(() -> {
+                    UserEntity newUser = UserEntity.builder()
+                            .slackUserId(slackUserId)
+                            .slackUserName(request.getSlackUserName())
+                            .teamId(request.getTeamId())
+                            .joinedAt(LocalDateTime.now())
+                            .build();
+                    return userRepository.save(newUser);
+                });
         MenuEntity.MenuType type = MenuEntity.MenuType.valueOf(menuCode);
         MenuEntity menu = menuRepository.findByMenuType(menuCode).orElseThrow(() -> new IllegalArgumentException("그런 메뉴는 읍써요..."));
 
