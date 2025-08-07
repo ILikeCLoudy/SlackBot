@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +36,17 @@ public class VoteService {
                 .orElseGet(() -> {
                     UserEntity newUser = UserEntity.builder()
                             .slackUserId(slackUserId)
-                            .slackUserName(request.getSlackUserName())
-                            .teamId(request.getTeamId())
+                            .slackUserName(request.getSlackUserName()) // 추가 필요
+                            .teamId(request.getTeamId()) // 추가 필요
                             .joinedAt(LocalDateTime.now())
                             .build();
                     return userRepository.save(newUser);
                 });
+
+        // ✅ 문자열 → Enum
         MenuEntity.MenuType type = MenuEntity.MenuType.valueOf(menuCode);
-        MenuEntity menu = menuRepository.findByMenuType(menuCode).orElseThrow(() -> new IllegalArgumentException("그런 메뉴는 읍써요..."));
+        // ✅ Enum으로 검색
+        MenuEntity menu = menuRepository.findByMenuType(type).orElseThrow(() -> new IllegalArgumentException("그런 메뉴는 읍써요..."));
 
         //VoteEntity 생성 및 저장용
         VoteEntity vote = VoteEntity.builder()

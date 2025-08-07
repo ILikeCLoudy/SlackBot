@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class VoteRequestDTO {
     private String slackUserId; // 사용자 식별
     private String menuCode; // A~E중 선택한 메뉴
+    private String slackUserName; // 신규 필드
+    private String teamId;        // 신규 필드
 }

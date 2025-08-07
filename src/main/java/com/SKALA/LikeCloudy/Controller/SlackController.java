@@ -64,7 +64,7 @@ public class SlackController {
                                                      @RequestParam("team_id") String teamId) {
         try {
             // 사용자가 "A" 등으로 투표했다고 가정
-            VoteRequestDTO vote = new VoteRequestDTO(userId, text.trim());
+            VoteRequestDTO vote = new VoteRequestDTO(userId, text.trim(), userName, teamId);
             voteService.vote(vote);
 
             return ResponseEntity.ok(userName + " 님의 투표가 완료되었습니다! ✅");

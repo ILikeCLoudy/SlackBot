@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface MenuRepository extends JpaRepository <MenuEntity, Long> {
-    Optional<MenuEntity> findByMenuType(String menuType); // 예 : "A", "B"
+    Optional<MenuEntity> findByMenuType(MenuEntity.MenuType menuType); // 예 : "A", "B"
     List<MenuEntity> findAllByMenuDate(LocalDate menuDate);
 }
