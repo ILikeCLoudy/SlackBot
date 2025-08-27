@@ -6,13 +6,17 @@ import com.SKALA.LikeCloudy.Service.MenuService;
 import com.SKALA.LikeCloudy.Service.ResultService;
 import com.SKALA.LikeCloudy.Service.SlackService;
 import com.SKALA.LikeCloudy.Service.VoteService;
+import com.SKALA.LikeCloudy.Service.HystecMenuService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class SlackController {
     private final VoteService voteService;
     private final ResultService resultService;
     private final SlackService slackService;
+    private final HystecMenuService hystecMenuService;
 
     @GetMapping("/test")
     public String sendSlackTest() {
@@ -57,25 +62,41 @@ public class SlackController {
         }
     }
 
-    @PostMapping("/command")
-    public ResponseEntity<String> handleSlashCommand(@RequestParam("text") String text,
-                                                     @RequestParam("user_id") String userId,
-                                                     @RequestParam("user_name") String userName,
-                                                     @RequestParam("team_id") String teamId) {
+    @PostMapping(value = "/command", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Map<String, String>> handleSlashCommand(
+            @RequestParam("text") String text,
+            @RequestParam("user_id") String userId,
+            @RequestParam("user_name") String userName,
+            @RequestParam("team_id") String teamId) {
+
+        Map<String, String> response = new HashMap<>();
+
         try {
             // 사용자가 "A" 등으로 투표했다고 가정
             VoteRequestDTO vote = new VoteRequestDTO(userId, text.trim(), userName, teamId);
             voteService.vote(vote);
 
-            return ResponseEntity.ok(userName + " 님의 투표가 완료되었습니다! ✅");
+            response.put("response_type", "in_channel"); // 채널 전체에 보이도록
+            response.put("text", userName + " 님의 투표가 완료되었습니다! ✅");
+            return ResponseEntity.ok(response);
+
         } catch (IllegalStateException e) {
-            return ResponseEntity.ok("엥? 이미 투표하셨어요! ❗");
+            response.put("response_type", "ephemeral"); // 사용자에게만 보이도록
+            response.put("text", "엥? 이미 투표하셨어요! ❗");
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.ok("유효하지 않은 사용자나 메뉴입니다. ❌");
+            response.put("response_type", "ephemeral");
+            response.put("text", "유효하지 않은 사용자나 메뉴입니다. ❌");
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.ok("서버 오류가 발생했어요: " + e.getMessage());
+            response.put("response_type", "ephemeral");
+            response.put("text", "서버 오류가 발생했어요: " + e.getMessage());
+            return ResponseEntity.ok(response);
         }
     }
+
 
 
     /*
@@ -93,5 +114,14 @@ public class SlackController {
         resultService.sendTodaySummaryToSlack();
         return ResponseEntity.ok("✅ 투표 결과가 Slack에 전송되었습니다!");
     }
+
+    @GetMapping("/menus/bundang/lunch")
+    public ResponseEntity<String> bundangLunch() {
+        var res = hystecMenuService.fetchBundangBiwonLunch(LocalDate.now());
+        String msg = hystecMenuService.formatBundangBiwonLunchForSlack(res);
+        // slackService.sendMessage(msg); // 원하면 전송
+        return ResponseEntity.ok(msg);
+    }
+
 
 }
