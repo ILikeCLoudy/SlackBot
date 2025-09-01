@@ -26,8 +26,6 @@ public class UserEntity {
 
     private LocalDateTime joinedAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.joinedAt = LocalDateTime.now();
-    }
+    public void updateTeamId(String teamId) { this.teamId = teamId; }
+    public void updateUserName(String userName) { this.slackUserName = userName; }
 }

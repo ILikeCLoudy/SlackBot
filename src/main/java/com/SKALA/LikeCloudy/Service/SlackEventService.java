@@ -26,14 +26,18 @@ public class SlackEventService {
 
         userRepository.findBySlackUserId(slackUserId).ifPresentOrElse(user -> {
             // 팀 정보만 최신화 (이름은 Slash Command로도 들어오므로 거기에서 갱신)
-            if (teamId != null && !teamId.isBlank()) user.setTeamId(teamId);
+            if (teamId != null && !teamId.isBlank() && !teamId.equals(user.getTeamId())) {
+                // 세터가 없어서(현재) updateTeamId로 변경
+                user.updateTeamId(teamId);
+            }
             userRepository.save(user);
         }, () -> {
-            UserEntity newbie = new UserEntity();
-            newbie.setSlackUserId(slackUserId);
-            newbie.setTeamId(teamId);
-            newbie.setSlackUserName(null); // 이름은 미상 → /slack/command 들어올 때 업데이트됨
-            newbie.setJoinedAt(LocalDateTime.now());
+            UserEntity newbie = UserEntity.builder()
+                            .slackUserId(slackUserId)
+                            .teamId(teamId)
+                            .slackUserName(null) // 이름은 slack/command 들어올때 갱신
+                            .joinedAt(LocalDateTime.now())
+                            .build();
             userRepository.save(newbie);
             log.info("[SlackEvent] user upsert: {}", slackUserId);
         });
@@ -42,5 +46,19 @@ public class SlackEventService {
         // if (channelId != null && !channelId.isBlank()) {
         //     channelRepository.upsert(channelId, LocalDateTime.now());
         // }
+    }
+
+    @Transactional
+    public void ensureUserName(String slackUserId, String slackUserName) {
+        if (slackUserId == null || slackUserId.isBlank()) return;
+        if (slackUserName == null || slackUserName.isBlank()) return;
+
+        userRepository.findBySlackUserId(slackUserId).ifPresent(user -> {
+            if (!slackUserName.equals(user.getSlackUserName())) {
+                user.updateUserName(slackUserName);   // UserEntity에 이미 있음
+                userRepository.save(user);
+                log.info("[SlackEvent] user name updated: {} -> {}", user.getSlackUserId(), slackUserName);
+            }
+        });
     }
 }

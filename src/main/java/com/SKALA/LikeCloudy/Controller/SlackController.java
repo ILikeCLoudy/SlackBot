@@ -2,11 +2,7 @@ package com.SKALA.LikeCloudy.Controller;
 import com.SKALA.LikeCloudy.DTO.MenuDTO;
 import com.SKALA.LikeCloudy.DTO.VoteRequestDTO;
 import com.SKALA.LikeCloudy.DTO.VoteSummaryResponse;
-import com.SKALA.LikeCloudy.Service.MenuService;
-import com.SKALA.LikeCloudy.Service.ResultService;
-import com.SKALA.LikeCloudy.Service.SlackService;
-import com.SKALA.LikeCloudy.Service.VoteService;
-import com.SKALA.LikeCloudy.Service.HystecMenuService;
+import com.SKALA.LikeCloudy.Service.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +24,7 @@ public class SlackController {
     private final ResultService resultService;
     private final SlackService slackService;
     private final HystecMenuService hystecMenuService;
+    private final SlackEventService slackEventService;
 
     @GetMapping("/test")
     public String sendSlackTest() {
@@ -75,6 +72,8 @@ public class SlackController {
             // 사용자가 "A" 등으로 투표했다고 가정
             VoteRequestDTO vote = new VoteRequestDTO(userId, text.trim(), userName, teamId);
             voteService.vote(vote);
+
+            slackEventService.ensureUserName(userId, userName);
 
             response.put("response_type", "in_channel"); // 채널 전체에 보이도록
             response.put("text", userName + " 님의 투표가 완료되었습니다! ✅");
