@@ -1,12 +1,17 @@
 server:
-  port: 8085
+  port: 8090
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 spring:
   datasource:
-    driver-class-name:
-    username:
-    password:
-    url:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: '0719'
+    url: jdbc:postgresql://localhost:5432/postgres
   thymeleaf:
     cache: false
 
@@ -14,17 +19,28 @@ spring:
     open-in-view: true
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
-        dialect:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+  mvc:
+    locale: ko_KR
+    locale-resolver: fixed
 
 
 slack:
-  bot-token: ${SLAKC_BOT_TOKEN}
-  postMessageUrl: "NULL"
+  bot-token: -
+  signing-secret: ${SLACK_SIGNING_SECRET}
+  postMessageUrl: "https://slack.com/api/chat.postMessage"
   channel:
-    monitor : #
+    monitor: "#일반"
 
 logging:
   level:
