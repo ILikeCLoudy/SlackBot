@@ -102,10 +102,10 @@ public class SlackController {
     [GET] /slack/result -> 오늘의 투표 결과를 Slack 메세지 형식으로 반환
      */
     @GetMapping("/result")
-    public ResponseEntity<String> getTodayVoteResult() {
+    public ResponseEntity<List<Map<String, Object>>> getTodayVoteResult() {
         VoteSummaryResponse summary = resultService.getVoteSummary(LocalDate.now());
-        String message = resultService.formatSummaryForSlack(summary);
-        return ResponseEntity.ok(message);
+        List<Map<String, Object>> blocks = resultService.formatSummaryForSlack(summary);
+        return ResponseEntity.ok(blocks);
     }
 
     @GetMapping("/result/send")
