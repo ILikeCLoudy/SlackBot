@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,16 +25,21 @@ public class SlackMessageService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public void sendMessage(String text) {
+    /**
+     * Send a message to Slack using Block Kit structure.
+     *
+     * @param blocks List of Block Kit blocks
+     */
+    public void sendMessage(List<Map<String, Object>> blocks) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(botToken); // Authorization: Bearer xoxb-...
 
-        Map<String, String> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("channel", defaultChannel);
-        body.put("text", text);
+        body.put("blocks", blocks);
 
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(postMessageUrl, entity, String.class);
 

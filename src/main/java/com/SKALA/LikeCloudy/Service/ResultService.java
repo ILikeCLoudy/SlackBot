@@ -4,6 +4,7 @@ import com.SKALA.LikeCloudy.DTO.VoteResultDTO;
 import com.SKALA.LikeCloudy.DTO.VoteSummaryResponse;
 import com.SKALA.LikeCloudy.Entity.MenuEntity;
 import com.SKALA.LikeCloudy.Entity.VoteEntity;
+import com.SKALA.LikeCloudy.Slack.SlackBlockBuilder;
 import com.SKALA.LikeCloudy.Repository.MenuRepository;
 import com.SKALA.LikeCloudy.Repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,25 +46,24 @@ public class ResultService {
         }
         return new VoteSummaryResponse(results, date);
     }
-    // Slack 메세지 형태로 가공합니다!
-    public String formatSummaryForSlack(VoteSummaryResponse summary) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\uD83C\uDF71 **").append(summary.getSurveyDate()).append(" 점심 투표 결과입니다. \n\n");
+    // Slack Block Kit 구조로 가공합니다!
+    public List<Map<String, Object>> formatSummaryForSlack(VoteSummaryResponse summary) {
+        SlackBlockBuilder builder = new SlackBlockBuilder();
+        builder.section(":fork_and_knife: *" + summary.getSurveyDate() + " 점심 투표 결과입니다.*");
+        builder.divider();
 
         for (VoteResultDTO result : summary.getResults()) {
-            sb.append("• ").append(result.getMenuCode())
-                    .append(" - ").append(result.getMenuName())
-                    .append(" (").append(result.getVoteCount()).append("명): ");
-
             String voterList = String.join(", ", result.getVoters());
-            sb.append(voterList).append("\n");
+            String text = String.format("• %s - %s (%d명): %s",
+                    result.getMenuCode(), result.getMenuName(), result.getVoteCount(), voterList);
+            builder.section(text);
         }
-        return sb.toString();
+        return builder.build();
     }
 
     public void sendTodaySummaryToSlack() {
         VoteSummaryResponse summary = getVoteSummary(LocalDate.now());
-        String message = formatSummaryForSlack((summary));
-        slackMessageService.sendMessage(message);
+        List<Map<String, Object>> blocks = formatSummaryForSlack(summary);
+        slackMessageService.sendMessage(blocks);
     }
 }
