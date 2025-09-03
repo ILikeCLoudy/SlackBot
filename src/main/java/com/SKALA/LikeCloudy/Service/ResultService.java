@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ResultService {
     private final MenuRepository menuRepository;
     private final VoteRepository voteRepository;
-    private final SlackService slackService;
+    private final SlackMessageService slackMessageService;
 
     public VoteSummaryResponse getVoteSummary(LocalDate date) {
         // 오늘 날짜의 모든 메뉴를 조회합니다!
@@ -64,6 +64,6 @@ public class ResultService {
     public void sendTodaySummaryToSlack() {
         VoteSummaryResponse summary = getVoteSummary(LocalDate.now());
         List<Map<String, Object>> blocks = formatSummaryForSlack(summary);
-        slackService.sendMessage(blocks);
+        slackMessageService.sendMessage(blocks);
     }
 }

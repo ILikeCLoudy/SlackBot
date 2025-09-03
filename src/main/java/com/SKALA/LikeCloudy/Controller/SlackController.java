@@ -22,13 +22,13 @@ public class SlackController {
     private final MenuService menuService;
     private final VoteService voteService;
     private final ResultService resultService;
-    private final SlackService slackService;
+    private final SlackMessageService slackMessageService;
     private final HystecMenuService hystecMenuService;
     private final SlackEventService slackEventService;
 
     @GetMapping("/test")
     public String sendSlackTest() {
-        slackService.sendMessage("테스트 메시지입니다! 👋");
+        slackMessageService.sendMessage("테스트 메시지입니다! 👋");
         return "Message Attempted";
     }
 
@@ -118,7 +118,7 @@ public class SlackController {
     public ResponseEntity<String> bundangLunch() {
         var res = hystecMenuService.fetchBundangBiwonLunch(LocalDate.now());
         String msg = hystecMenuService.formatBundangBiwonLunchForSlack(res);
-        // slackService.sendMessage(msg); // 원하면 전송
+        // slackMessageService.sendMessage(msg); // 원하면 전송
         return ResponseEntity.ok(msg);
     }
 
