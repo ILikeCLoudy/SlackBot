@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final SlackService slackService;
+    private final SlackMessageService slackMessageService;
     private final HystecMenuService hystecMenuService;
     private final ResultService resultService;
 
@@ -21,7 +21,7 @@ public class ScheduleService {
     public void sendMenuGuide() {
         String message = hystecMenuService.formatBundangBiwonLunchForSlack(
                 hystecMenuService.fetchBundangBiwonLunch(LocalDate.now()));
-        slackService.sendMessage(message);
+        slackMessageService.sendMessage(message);
     }
 
     /**

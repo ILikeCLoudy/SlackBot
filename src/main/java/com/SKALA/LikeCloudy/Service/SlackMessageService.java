@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class SlackService {
+public class SlackMessageService {
 
     private final Slack slack = Slack.getInstance();
 
