@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+import com.SKALA.LikeCloudy.Slack.SlackBlockBuilder;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -21,7 +23,11 @@ public class ScheduleService {
     public void sendMenuGuide() {
         String message = hystecMenuService.formatBundangBiwonLunchForSlack(
                 hystecMenuService.fetchBundangBiwonLunch(LocalDate.now()));
-        slackMessageService.sendMessage(message);
+
+        SlackBlockBuilder builder = new SlackBlockBuilder();
+        builder.section(message);
+
+        slackMessageService.sendMessage(builder.build());
     }
 
     /**
