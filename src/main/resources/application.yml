@@ -34,13 +34,18 @@ spring:
     locale: ko_KR
     locale-resolver: fixed
 
+  task:
+    scheduling:
+      pool:
+        size: 2
+
 
 slack:
   bot-token: -
   signing-secret: ${SLACK_SIGNING_SECRET}
   postMessageUrl: "https://slack.com/api/chat.postMessage"
-  channel:
-    monitor: "#일반"
+    channel:
+      monitor: "#일반"
 
 logging:
   level:
