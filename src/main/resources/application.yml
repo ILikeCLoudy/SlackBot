@@ -34,9 +34,14 @@ spring:
     locale: ko_KR
     locale-resolver: fixed
 
+  task:
+    scheduling:
+      pool:
+        size: 10
+
 
 slack:
-  bot-token: -
+  bot-token: "-"
   signing-secret: ${SLACK_SIGNING_SECRET}
   postMessageUrl: "https://slack.com/api/chat.postMessage"
   channel:
